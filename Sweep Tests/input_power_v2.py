@@ -20,7 +20,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-DUT = "MMDL301_SD"  # Device Under Test (DUT) name
+DUT = "SMS7621"  # Device Under Test (DUT) name
 
 Pin = np.linspace(-40, 10, 201) # Input power sweep from X dBm to Y dBm in Z steps
 f0 = 1.575                      # Center frequency in GHz
@@ -79,8 +79,6 @@ print('Connected to: {}'.format(IDN_SG))
 print('Connected to: {}'.format(IDN_SA))
 
 
-
-
 inst_SA.write(":INIT:CONT ON")         # Stop continuous sweeping
 inst_SA.write(f":FREQ:CENT {f0}GHz")    # Center frequency
 inst_SA.write(f":FREQ:SPAN {SPAN}")     # Frequency span
@@ -95,6 +93,12 @@ sweep_time = float(inst_SA. query(":SWE:TIME?"))
 
 print(f"Analyzer sweep time: {sweep_time:.3f} seconds")
 delay = sweep_time * 1.5  # Delay to allow for signal stabilization before measurement
+proceed = input(f'The sweep will take {sweep_time * 1.1 * len(Pin)* len(modes)} seconds.\nDo you want to proceed? (y/n): ')
+if proceed.lower() != 'y':
+    print("Aborting sweep.")
+    inst_SG.close()
+    inst_SA.close()
+    sys.exit()
 
 # Set startup parameters for the signal generator
 inst_SG.write(f':SOURce:POWer {min(Pin)}DBM')
@@ -118,24 +122,33 @@ for M in modes:
     current_freq = inst_SG.query(':SOURce:FREQuency?') 
 
     for i, P in enumerate(Pin):
-        inst_SG.write(f':SOURce:POWer {P}DBM')              # Set output power
-        time.sleep(delay)                                       # Wait for the signal to stabilize
-        
-        inst_SA.write(':CALCulate:MARKer1:MAXimum')             # Query the frequency of Marker 1 at the peak of the signal
-        peak_freq = inst_SA.query(':CALCulate:MARKer1:X?')      # Find the position of Marker 1 on the frequency axis
-        peak_amp = inst_SA.query(':CALCulate:MARKer1:Y?')       # Read the amplitude at that peak
 
-        # Store result in dataframe
-        df.loc[i, freq_col] = peak_amp
+        inst_SG.write(f':SOURce:POWer {P}DBM')
+
+        # Trigger one analyzer sweep
+        inst_SA.write(":INIT:IMM")
+        inst_SA.query("*OPC?")
+
+        # Find peak
+        inst_SA.write(':CALCulate:MARKer1:MAXimum')
+
+        peak_freq = inst_SA.query(
+            ':CALCulate:MARKer1:X?'
+        )
+
+        peak_amp = inst_SA.query(
+            ':CALCulate:MARKer1:Y?'
+        )
+
+        # Store result
+        df.loc[i, f"{harmonic_freq:g}GHz"] = float(peak_amp)
 
         # Save after every measurement
         df.to_csv(csv_path, index=False)
 
         print(f'Current Output Frequency: {current_freq}')
-        print(f"Peak Frequency: {float(peak_freq):,} Hz")
-        print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")
-
-        time.sleep(delay)                                       # Wait for the signal to stabilize before the next iteration
+        print(f"Peak Frequency: {float(peak_freq):,.0f} Hz")
+        print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")                                  # Wait for the signal to stabilize before the next iteration
 
 # Turn off the output of the signal generator
 inst_SG.write(':OUTPut:STATe OFF')
