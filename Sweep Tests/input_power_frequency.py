@@ -20,11 +20,12 @@ import sys
 import numpy as np
 import pandas as pd
 
-DUT = "BEST_B9416_series_MMDL301_SD"
-BW = 0.150 # GHz
-f0 = 1.575 # Center frequency in GHz
-Pin = np.linspace(-20, 10, 61) # Input power sweep from X dBm to Y dBm in Z steps
-Fin = np.linspace(f0 - BW/2, f0 + BW/2, 201)
+DUT = "MMDL301_series_Shunt_Cap1_series_TL"
+
+BW = 0.01 # GHz
+f0 = 1.57 # Center frequency in GHz
+Pin = np.linspace(0, 0, 1) # Input power sweep from X dBm to Y dBm in Z steps
+Fin = np.linspace(f0 - BW/2, f0 + BW/2, 101)
 modes = [1, 2]                  # Harmonics to analyze (1 = fundamental, 2 = 2nd harmonic, etc.)
 
 SPAN = 5e4                          # Frequency span in Hz
@@ -107,35 +108,37 @@ inst_SG.write(f':SOURce:FREQuency {f0}GHz')
 
 # Turn on the output of the signal generator
 inst_SG.write(':OUTPut:STATe ON')
+results = {}
 
 for F in Fin:
-    # Analyzer frequency for this harmonic
+
     inst_SA.write(f":FREQ:CENT {F}GHz")
-    inst_SG.write(f':SOURce:FREQuency {F}GHz')             # Set output frequency
-    current_freq = inst_SG.query(':SOURce:FREQuency?') 
+    inst_SG.write(f':SOURce:FREQuency {F}GHz')
+
+    current_freq = inst_SG.query(':SOURce:FREQuency?')
 
     for M in modes:
-        # Analyzer frequency for this harmonic
+
         harmonic_freq = M * F
 
-        # CSV column name
         freq_col = f"{harmonic_freq:g}GHz"
 
-        # Create column
-        df[freq_col] = np.nan
+        # Create array for this frequency
+        results[freq_col] = np.full(len(Pin), np.nan)
 
         inst_SA.write(f":FREQ:CENT {harmonic_freq:g}GHz")
-        inst_SG.write(f':SOURce:FREQuency {F}GHz')             # Set output frequency
-        current_freq = inst_SG.query(':SOURce:FREQuency?') 
+
+        inst_SG.write(f':SOURce:FREQuency {F}GHz')
+
+        current_freq = inst_SG.query(':SOURce:FREQuency?')
+
         for i, P in enumerate(Pin):
 
             inst_SG.write(f':SOURce:POWer {P}DBM')
 
-            # Trigger one analyzer sweep
             inst_SA.write(":INIT:IMM")
             inst_SA.query("*OPC?")
 
-            # Find peak
             inst_SA.write(':CALCulate:MARKer1:MAXimum')
 
             peak_freq = inst_SA.query(
@@ -146,15 +149,26 @@ for F in Fin:
                 ':CALCulate:MARKer1:Y?'
             )
 
-            # Store result
-            df.loc[i, f"{harmonic_freq:g}GHz"] = float(peak_amp)
-
-            # Save after every measurement
-            df.to_csv(csv_path, index=False)
+            # Store result in dictionary
+            results[freq_col][i] = float(peak_amp)
 
             print(f'Current Output Frequency: {current_freq}')
             print(f"Peak Frequency: {float(peak_freq):,.0f} Hz")
-            print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")      
+            print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")
+
+
+# ============================================================
+# Combine all results at once
+# ============================================================
+
+results_df = pd.DataFrame(results)
+
+df = pd.concat(
+    [df, results_df],
+    axis=1
+)
+
+df.to_csv(csv_path, index=False)
 
 # Turn off the output of the signal generator
 inst_SG.write(':OUTPut:STATe OFF')

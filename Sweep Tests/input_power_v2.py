@@ -20,13 +20,15 @@ import sys
 import numpy as np
 import pandas as pd
 
-DUT = "SMS7621"  # Device Under Test (DUT) name
+#DUT = "SMS7621"  # Device Under Test (DUT) name
+DUT = "SMS_1p5mm_2stub_20p6mm_TL_v1"  # Device Under Test (DUT) name
+#DUT = "STUB_TL_STUB_v1_SMS7621"
 
-Pin = np.linspace(-40, 10, 201) # Input power sweep from X dBm to Y dBm in Z steps
+Pin = np.linspace(-70, 20, 91) # Input power sweep from X dBm to Y dBm in Z steps
 f0 = 1.575                      # Center frequency in GHz
 modes = [1, 2]                  # Harmonics to analyze (1 = fundamental, 2 = 2nd harmonic, etc.)
 
-SPAN = 5e4                          # Frequency span in Hz
+SPAN = 5e3                          # Frequency span in Hz
 RBW = 1e2                        # Resolution bandwidth in Hz
 
 # Obtain the VISA address (or alias) from Keysight Connection Expert
@@ -148,7 +150,7 @@ for M in modes:
 
         print(f'Current Output Frequency: {current_freq}')
         print(f"Peak Frequency: {float(peak_freq):,.0f} Hz")
-        print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")                                  # Wait for the signal to stabilize before the next iteration
+        print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")        # Wait for the signal to stabilize before the next iteration
 
 # Turn off the output of the signal generator
 inst_SG.write(':OUTPut:STATe OFF')

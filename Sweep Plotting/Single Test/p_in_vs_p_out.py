@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # CSV file
-csv_path = Path(r"Data/pin_sweep/THRU/2026-10-01_13-41-31.csv")
+csv_path = Path(r"Data\pin_sweep\SMS_1p5mm_2stub_20p6mm_TL_v1\2026-10-13_17-30-22.csv")
 
 df = pd.read_csv(csv_path)
 
