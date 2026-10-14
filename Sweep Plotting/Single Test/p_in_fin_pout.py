@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # File
-file = Path(r'Data\p_freq_in_sweep\MMDL301_series_Shunt_Cap1_series_TL\2026-10-05_20-22-01.csv')
+file = Path(r'Data\p_freq_in_sweep\SAW_MMDL301_STUBMATCH\2026-10-14_17-50-37.csv')
 
 # Read CSV
 df = pd.read_csv(file)

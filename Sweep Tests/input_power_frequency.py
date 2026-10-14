@@ -20,12 +20,12 @@ import sys
 import numpy as np
 import pandas as pd
 
-DUT = "MMDL301_series_Shunt_Cap1_series_TL"
+DUT = "SAW_MMDL301_STUBMATCH"
 
-BW = 0.01 # GHz
-f0 = 1.57 # Center frequency in GHz
-Pin = np.linspace(0, 0, 1) # Input power sweep from X dBm to Y dBm in Z steps
-Fin = np.linspace(f0 - BW/2, f0 + BW/2, 101)
+BW = 0.12 # GHz
+f0 = 1.575 # Center frequency in GHz
+Pin = np.linspace(-30, 20, 11) # Input power sweep from X dBm to Y dBm in Z steps
+Fin = np.linspace(f0 - BW/2, f0 + BW/2, 51)
 modes = [1, 2]                  # Harmonics to analyze (1 = fundamental, 2 = 2nd harmonic, etc.)
 
 SPAN = 5e4                          # Frequency span in Hz
