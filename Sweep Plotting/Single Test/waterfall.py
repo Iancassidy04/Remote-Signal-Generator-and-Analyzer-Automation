@@ -1,3 +1,5 @@
+# Author: Ian Cassidy
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,7 +39,6 @@ for col in df.columns[1:]:
 
 # Remove rows without valid input power
 df = df.dropna(subset=[pin_col]).copy()
-
 
 frequencies = []
 frequency_columns = []
@@ -88,7 +89,6 @@ df = df.iloc[pin_order].reset_index(drop=True)
 f0_freq = np.array([F / 1e9 for F, col in f0_list])
 f20_freq = np.array([F / 1e9 for F, col in f20_list])
 
-
 def get_measurement_matrix(freq_list):
     """
     Returns a matrix with shape:
@@ -101,7 +101,6 @@ def get_measurement_matrix(freq_list):
         for F, col in freq_list
     ])
 
-
 # Output power matrices, in dBm
 pout_f0 = get_measurement_matrix(f0_list)
 pout_f20 = get_measurement_matrix(f20_list)
@@ -111,7 +110,6 @@ pout_f20 = get_measurement_matrix(f20_list)
 # Broadcast Pin across all frequencies
 cl_f0 = pin[np.newaxis, :] - pout_f0
 cl_f20 = pin[np.newaxis, :] - pout_f20
-
 
 def global_norm(data):
     valid = data[np.isfinite(data)]
@@ -126,7 +124,6 @@ def global_norm(data):
         vmax = vmin + 1
 
     return Normalize(vmin=vmin, vmax=vmax)
-
 
 # Same scale for f0 and 2f0 output power
 pout_norm = global_norm(
@@ -143,8 +140,6 @@ cl_norm = global_norm(
         cl_f20.ravel()
     ])
 )
-
-
 
 def plot_waterfall(
     pin,
@@ -193,10 +188,7 @@ def plot_waterfall(
     fig.tight_layout()
 
 
-# ============================================================
 # f0 OUTPUT POWER
-# ============================================================
-
 plot_waterfall(
     pin=pin,
     frequencies=f0_freq,
@@ -206,9 +198,6 @@ plot_waterfall(
     cmap="turbo",
     norm=pout_norm
 )
-
-
-
 
 plot_waterfall(
     pin=pin,
@@ -220,7 +209,6 @@ plot_waterfall(
     norm=cl_norm
 )
 
-
 plot_waterfall(
     pin=pin,
     frequencies=f20_freq,
@@ -231,7 +219,6 @@ plot_waterfall(
     norm=pout_norm
 )
 
-
 plot_waterfall(
     pin=pin,
     frequencies=f20_freq,
@@ -241,6 +228,5 @@ plot_waterfall(
     cmap="viridis",
     norm=cl_norm
 )
-
 
 plt.show()

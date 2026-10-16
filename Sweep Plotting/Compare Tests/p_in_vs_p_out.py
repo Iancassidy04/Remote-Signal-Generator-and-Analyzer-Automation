@@ -1,3 +1,5 @@
+# Author: Ian Cassidy
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -41,7 +43,6 @@ while DUTS == "y":
         print(f"{i}: {file.stem}")
 
     # Add tests for this DUT
-
     ADD_CSV = "y"
     while ADD_CSV == "y":
 
@@ -51,7 +52,6 @@ while DUTS == "y":
 
     # Add another DUT
     DUTS = input("\nWould you like to add another DUT to compare? (y/n) ")
-
 
 # Plotting
 plt.figure()
