@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots conversion loss vs input power for a range of frequencies as 3D plot
+
+Intended for comparing the filters passband and the diodes harmonic efficiency
+
+'''
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

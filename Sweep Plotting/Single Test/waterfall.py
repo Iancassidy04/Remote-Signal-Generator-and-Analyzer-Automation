@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots conversion loss and ouput power vs input power for a range of frequencies as 2D plot
+
+Intended for analzing HT system efficiency as a whole
+
+'''
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

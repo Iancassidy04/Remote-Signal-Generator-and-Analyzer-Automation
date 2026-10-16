@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots ouptut power vs input power for a multiple tests
+
+Intended for comparing the power efficiency of diffent duts or tests
+
+'''
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path

@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots output power vs input power as a 2D plot
+
+Intended for analyzing the diodes power efficieny at a target frequency
+
+'''
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path

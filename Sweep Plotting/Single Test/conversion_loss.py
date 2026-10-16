@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots conversion loss vs input power as a 2D plot
+
+Intended for analyzing the diodes harmonic efficieny at a target frequency
+
+'''
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path

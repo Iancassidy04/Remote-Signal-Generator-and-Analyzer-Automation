@@ -1,5 +1,12 @@
 # Author: Ian Cassidy
 
+'''
+Plots conversion loss vs input power for a multiple tests
+
+Intended for comparing the harmonic efficiency of diffent duts or tests
+
+'''
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
