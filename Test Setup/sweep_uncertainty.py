@@ -33,22 +33,25 @@ VISA_ADDRESS_SA = 'USB0::0x2A8D::0x0B0B::MY53400410::0::INSTR'
 
 # Frequency span sweep
 SPAN_sweep = np.array([
-    10e3,
-    30e3,
-    100e3,
-    300e3,
-    1e6
+    10e1,
+    10e2,
+    30e2,
+    100e2,
+    300e2,
+    1e3
 ])
 
 # Resolution bandwidth sweep
 RBW_sweep = np.array([
-    100,
-    300,
-    1e3,
-    3e3
+    10000,
+    30000,
+    1e5,
+    3e5,
+    4e5,
+    6e6
 ])
 
-Pdbm_in = np.linspace(-60, 10, 70)
+Pdbm_in = np.linspace(-80, -50, 16)
 
 F0 = 1.575        # Set fundamental frequency (GHz)
 modes = [1, 2]      # Define harmonics
@@ -71,7 +74,7 @@ run_dir.mkdir(
     )
 
 config_path =  run_dir / "configuration.csv"
-uncert_path =  run_dir / "uncertainty.csv"
+uncert_path = run_dir / "uncertainty.csv"
 raw_path = run_dir / "raw.csv"
 
 
@@ -173,6 +176,7 @@ try:
                     MF0 = M * F0
 
                     # Center the analyzer at the harmonic being measured
+                    inst_SG.write(f":SOURce:FREQuency {MF0}GHz")
                     inst_SA.write(f":FREQ:CENT {MF0}GHz")
                     inst_SA.query("*OPC?")
 
@@ -356,7 +360,12 @@ if not summary.empty and not config_df.empty:
 
         fig, ax = plt.subplots(figsize=(11, 7))
 
-        for label, group in mode_df.groupby("config_label"):
+        for label, group in mode_df.groupby(
+            ["SPAN_Hz", "RBW_Hz"],
+            sort=True
+        ):
+            span, rbw = label
+            label = f"Span={span:.0e} Hz, RBW={rbw:.0e} Hz"
             group = group.sort_values("Pin_dBm")
 
             ax.plot(
@@ -392,7 +401,12 @@ if not summary.empty and not config_df.empty:
 
         fig, ax = plt.subplots(figsize=(11, 7))
 
-        for label, group in mode_df.groupby("config_label"):
+        for label, group in mode_df.groupby(
+            ["SPAN_Hz", "RBW_Hz"],
+            sort=True
+        ):
+            span, rbw = label
+            label = f"Span={span:.0e} Hz, RBW={rbw:.0e} Hz"
             group = group.sort_values("Pin_dBm")
 
             ax.plot(
@@ -405,3 +419,17 @@ if not summary.empty and not config_df.empty:
             )
 
         ax.set_xlabel("Input power (dBm)")
+        ax.set_ylabel("Output-power standard deviation (dB)")
+        ax.set_title(f"Standard Deviation vs. Input Power — {mode}f0")
+        ax.grid(True, alpha=0.3)
+        ax.legend(
+            title="Span / RBW",
+            fontsize=7,
+            ncol=2
+        )
+        fig.tight_layout()
+        fig.savefig(
+            run_dir / f"std_Pout_vs_Pin_mode_{mode}.png",
+            dpi=300
+        )
+        plt.show()
