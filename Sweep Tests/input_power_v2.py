@@ -13,12 +13,13 @@ UVM, Votey Hall, Room 334B
 
 # Libraries
 from datetime import date
-import time
 from pathlib import Path
 import pyvisa as visa
-import sys
-import numpy as np
 import pandas as pd
+import numpy as np
+import time
+import sys
+
 
 #DUT = "SMS7621"  # Device Under Test (DUT) name
 #DUT = "SMS_1p5mm_2stub_20p6mm_TL_v1"  # Device Under Test (DUT) name

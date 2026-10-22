@@ -7,9 +7,9 @@ Intended for comparing the power efficiency of diffent duts or tests
 
 '''
 
-import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
 
 data_folder = Path("Data")
 
@@ -79,15 +79,13 @@ for csv_path in selected_files:
 
     # Plot
     plt.plot(Pin, f0, marker=".", label=f"{DUT} - {date} - Fundamental")
-
     plt.plot(Pin, f02, marker=".", label=f"{DUT} - {date} - 2nd Harmonic")
 
 DUT_names = DUT_names.rstrip(", ")
 
-plt.xlabel("Input Power (dBm)")
-plt.ylabel("Output Power (dBm)")
 plt.title(f"{DUT_names}: Input vs Output Power Comparison")
-
+plt.ylabel("Output Power (dBm)")
+plt.xlabel("Input Power (dBm)")
 plt.grid(True)
 plt.legend()
 plt.show()

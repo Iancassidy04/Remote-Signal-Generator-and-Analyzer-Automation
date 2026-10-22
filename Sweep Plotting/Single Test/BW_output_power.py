@@ -7,10 +7,10 @@ Intended for comparing the filters passband and the diodes power efficieny
 
 '''
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
+import numpy as np
 
 # File
 file = Path(r'Data\p_freq_in_sweep\SAW_MMDL301_STUBMATCH\2026-10-14_17-50-37.csv')

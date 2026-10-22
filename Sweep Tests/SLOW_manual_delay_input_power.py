@@ -13,12 +13,14 @@ UVM, Votey Hall, Room 334B
 
 # Libraries
 from datetime import date
-import time
 from pathlib import Path
 import pyvisa as visa
-import sys
-import numpy as np
 import pandas as pd
+import numpy as np
+import time
+import sys
+
+
 
 DUT = "MMDL301_SD"  # Device Under Test (DUT) name
 

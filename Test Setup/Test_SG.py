@@ -2,8 +2,8 @@
 # Test Connection to Signal Generator
 # OCT 1st 2026
 
-import time
 import pyvisa as visa
+import time
 import sys
 
 # Programmatically query the Python version and print information
