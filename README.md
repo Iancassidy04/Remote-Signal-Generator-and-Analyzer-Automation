@@ -2,7 +2,7 @@
 
 Python scripts for automating RF power sweeps on a Keysight signal generator and signal analyzer over VISA, and for plotting the results. The scripts were written to characterize Schottky-diode frequency doublers (MMDL301, SMS7621) and their matching networks: the generator drives the device under test (DUT) at a fundamental frequency *f0*, and the analyzer measures the output power at *f0* and its second harmonic *2f0* as the input power (and optionally the frequency) is swept.
 
-Developed at the University of Vermont, Votey Hall, Room 334B.
+Developed at the University of Vermont.
 
 ## Hardware
 
