@@ -1,0 +1,26 @@
+{
+  "devices": [],
+  "sg_addresses": [
+    "USB0::0x0957::0x1F01::MY59100943::0::INSTR"
+  ],
+  "sa_addresses": [
+    "USB0::0x2A8D::0x0B0B::MY53400410::0::INSTR"
+  ],
+  "instrument_ids": {},
+  "last": {
+    "dut": "",
+    "sweep_type": "pin_sweep",
+    "pin_start": "-60",
+    "pin_stop": "20",
+    "pin_points": "201",
+    "f0": "1.575",
+    "modes": "1, 2",
+    "bw": "0.12",
+    "f_points": "51",
+    "rbw": "100",
+    "span": "50k",
+    "sg_address": "USB0::0x0957::0x1F01::MY59100943::0::INSTR",
+    "sa_address": "USB0::0x2A8D::0x0B0B::MY53400410::0::INSTR",
+    "dry_run": false
+  }
+}
