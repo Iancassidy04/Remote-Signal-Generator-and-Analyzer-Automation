@@ -12,8 +12,8 @@ UVM, Votey Hall, Room 334B
 '''
 
 # Libraries
-import time
 import pyvisa as visa
+import time
 import sys
 
 # Obtain the VISA address (or alias) from Keysight Connection Expert

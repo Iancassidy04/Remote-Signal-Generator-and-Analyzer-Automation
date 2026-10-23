@@ -1,18 +1,21 @@
-import pandas as pd
-import numpy as np
+# Author: Ian Cassidy
+
+'''
+Plots conversion loss vs input power for a range of frequencies as 3D plot
+
+Intended for comparing the filters passband and the diodes harmonic efficiency
+
+'''
+
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
+import numpy as np
 
-# ============================================================
 # File
-# ============================================================
-
 file = Path(r"Data\p_freq_in_sweep\MMDL301_series_Shunt_Cap1_series_TL\2026-10-05_20-35-13.csv")
 
-# ============================================================
 # Read CSV
-# ============================================================
-
 df = pd.read_csv(file)
 
 # Clean column names
@@ -42,17 +45,12 @@ for col in df.columns[1:]:
 
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
-# ============================================================
 # Get frequencies
-# ============================================================
-
 frequencies = []
 frequency_columns = []
 
 for col in df.columns[1:]:
-
     try:
-
         frequency = float(
             col.replace("GHz", "")
                .replace("ghz", "")
@@ -70,27 +68,19 @@ for col in df.columns[1:]:
 
 frequencies = np.array(frequencies)
 
-# ============================================================
 # Separate f0 and 2f0
-# ============================================================
-
 avg_freq = np.nanmean(frequencies)
 
 f0_list = []
 f20_list = []
 
 for F, col in zip(frequencies, frequency_columns):
-
     if F < avg_freq:
         f0_list.append((F, col))
-
     else:
         f20_list.append((F, col))
 
-# ============================================================
 # Color based on average Pout
-# ============================================================
-
 average_pout = []
 
 for freq, col in f0_list:
@@ -105,39 +95,26 @@ max_avg = max(average_pout)
 colors = []
 
 for avg in average_pout:
-
     if max_avg == min_avg:
         ratio = 0.5
-
     else:
         ratio = (avg - min_avg) / (max_avg - min_avg)
 
-    # Light blue
-    blue = np.array([0.2, 0.5, 0.9])
-
-    # Light red
-    red = np.array([0.9, 0.2, 0.2])
+    blue = np.array([0.2, 0.5, 0.9])    # Light blue
+    red = np.array([0.9, 0.2, 0.2])     # Light red
 
     color = blue * (1 - ratio) + red * ratio
-
     colors.append(color)
 
-# ============================================================
 # F0 CONVERSION LOSS WATERFALL
-# ============================================================
-
 plt.figure(figsize=(10, 7))
 
 # Vertical offset between traces
 offset = 5
 
 for i, (f0, col) in enumerate(f0_list):
-
-    # Conversion loss
-    CL = df[pin_col].values - df[col].values
-
-    # Offset each frequency
-    CL_offset = CL + i * offset
+    CL = df[pin_col].values - df[col].values    # Conversion loss
+    CL_offset = CL + i * offset                 # Offset each frequency
 
     plt.plot(
         df[pin_col].values,
@@ -169,21 +146,14 @@ plt.title(
 )
 
 plt.grid(True, alpha=0.3)
-
 plt.tight_layout()
 
-# ============================================================
 # 2f0 CONVERSION LOSS WATERFALL
-# ============================================================
 
 # Use the same color scheme based on average Pout
 average_pout_2 = []
-
 for freq, col in f20_list:
-
-    average_pout_2.append(
-        np.nanmean(df[col].values)
-    )
+    average_pout_2.append(np.nanmean(df[col].values))
 
 min_avg = min(average_pout_2)
 max_avg = max(average_pout_2)
@@ -191,10 +161,8 @@ max_avg = max(average_pout_2)
 colors_2 = []
 
 for avg in average_pout_2:
-
     if max_avg == min_avg:
         ratio = 0.5
-
     else:
         ratio = (avg - min_avg) / (max_avg - min_avg)
 
@@ -202,18 +170,13 @@ for avg in average_pout_2:
     red = np.array([0.9, 0.2, 0.2])
 
     color = blue * (1 - ratio) + red * ratio
-
     colors_2.append(color)
 
 plt.figure(figsize=(10, 7))
 
 for i, (f20, col) in enumerate(f20_list):
-
-    # Conversion loss
-    CL = df[pin_col].values - df[col].values
-
-    # Vertical offset
-    CL_offset = CL + i * offset
+    CL = df[pin_col].values - df[col].values    # Conversion loss
+    CL_offset = CL + i * offset                 # Vertical offset
 
     plt.plot(
         df[pin_col].values,
@@ -222,7 +185,6 @@ for i, (f20, col) in enumerate(f20_list):
         linewidth=1.5
     )
 
-    # Frequency label
     valid = ~np.isnan(CL_offset)
 
     if np.any(valid):
@@ -245,23 +207,15 @@ plt.title(
 )
 
 plt.grid(True, alpha=0.3)
-
 plt.tight_layout()
-
 plt.show()
 
-# ============================================================
 # BEST f0 CL
-# ============================================================
-
 best_f0 = None
-
 for f0, col in f0_list:
 
     CL = df[pin_col].values - df[col].values
-
     index = np.nanargmin(CL)
-
     best_CL = CL[index]
     best_Pin = df[pin_col].values[index]
 
@@ -277,13 +231,8 @@ print(f"Frequency = {best_f0['frequency'] / 1e9:.5g} GHz")
 print(f"Pin       = {best_f0['Pin']:.2f} dBm")
 print(f"CL        = {best_f0['CL']:.2f} dB")
 
-
-# ============================================================
 # BEST 2f0 CL
-# ============================================================
-
 best_2f0 = None
-
 for f20, col in f20_list:
 
     CL = df[pin_col].values - df[col].values

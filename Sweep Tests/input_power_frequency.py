@@ -1,4 +1,4 @@
-# Ian Cassidy
+# Author: Ian Cassidy
 # Sweep Input Power and Measure Output Power
 # OCT 1st 2026
 
@@ -13,12 +13,12 @@ UVM, Votey Hall, Room 334B
 
 # Libraries
 from datetime import date
-import time
 from pathlib import Path
 import pyvisa as visa
-import sys
-import numpy as np
 import pandas as pd
+import numpy as np
+import time
+import sys
 
 DUT = "SAW_MMDL301_STUBMATCH"
 
@@ -44,7 +44,6 @@ csv_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Create dataframe with one row for every Pin value
 df = pd.DataFrame({"Pin": Pin})
-
 
 # Define VISA Resource Manager
 rm = visa.ResourceManager('C:\\Windows\\System32\\visa32.dll')
@@ -80,7 +79,6 @@ IDN_SA = str(inst_SA.query('*IDN?'))
 print('Connected to: {}'.format(IDN_SG))
 print('Connected to: {}'.format(IDN_SA))
 
-
 inst_SA.write(":INIT:CONT OFF")         # Stop continuous sweeping
 inst_SA.write(f":FREQ:CENT {f0}GHz")    # Center frequency
 inst_SA.write(f":FREQ:SPAN {SPAN}")     # Frequency span
@@ -94,7 +92,6 @@ inst_SA.write("*WAI")
 sweep_time = float(inst_SA. query(":SWE:TIME?"))
 
 print(f"Analyzer sweep time: {sweep_time:.3f} seconds")
-delay = sweep_time * 1.1  # Delay to allow for signal stabilization before measurement
 proceed = input(f'The sweep will take {sweep_time * 1.1 * len(Pin) * len(Fin) * len(modes)} seconds.\nDo you want to proceed? (y/n): ')
 if proceed.lower() != 'y':
     print("Aborting sweep.")
@@ -111,23 +108,19 @@ inst_SG.write(':OUTPut:STATe ON')
 results = {}
 
 for F in Fin:
-
     inst_SA.write(f":FREQ:CENT {F}GHz")
     inst_SG.write(f':SOURce:FREQuency {F}GHz')
 
     current_freq = inst_SG.query(':SOURce:FREQuency?')
 
     for M in modes:
-
         harmonic_freq = M * F
-
         freq_col = f"{harmonic_freq:g}GHz"
 
         # Create array for this frequency
         results[freq_col] = np.full(len(Pin), np.nan)
 
         inst_SA.write(f":FREQ:CENT {harmonic_freq:g}GHz")
-
         inst_SG.write(f':SOURce:FREQuency {F}GHz')
 
         current_freq = inst_SG.query(':SOURce:FREQuency?')
@@ -135,19 +128,14 @@ for F in Fin:
         for i, P in enumerate(Pin):
 
             inst_SG.write(f':SOURce:POWer {P}DBM')
-
             inst_SA.write(":INIT:IMM")
+
             inst_SA.query("*OPC?")
 
             inst_SA.write(':CALCulate:MARKer1:MAXimum')
 
-            peak_freq = inst_SA.query(
-                ':CALCulate:MARKer1:X?'
-            )
-
-            peak_amp = inst_SA.query(
-                ':CALCulate:MARKer1:Y?'
-            )
+            peak_freq = inst_SA.query(':CALCulate:MARKer1:X?')
+            peak_amp = inst_SA.query(':CALCulate:MARKer1:Y?')
 
             # Store result in dictionary
             results[freq_col][i] = float(peak_amp)
@@ -156,18 +144,9 @@ for F in Fin:
             print(f"Peak Frequency: {float(peak_freq):,.0f} Hz")
             print(f"Peak Amplitude: {float(peak_amp):.2f} dBm")
 
-
-# ============================================================
 # Combine all results at once
-# ============================================================
-
 results_df = pd.DataFrame(results)
-
-df = pd.concat(
-    [df, results_df],
-    axis=1
-)
-
+df = pd.concat([df, results_df],axis=1)
 df.to_csv(csv_path, index=False)
 
 # Turn off the output of the signal generator

@@ -1,6 +1,15 @@
-import pandas as pd
+# Author: Ian Cassidy
+
+'''
+Plots conversion loss vs input power for a multiple tests
+
+Intended for comparing the harmonic efficiency of diffent duts or tests
+
+'''
+
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
 
 data_folder = Path("Data")
 
@@ -52,7 +61,6 @@ while DUTS == "y":
     # Add another DUT
     DUTS = input("\nWould you like to add another DUT to compare? (y/n) ")
 
-
 # Plotting
 plt.figure()
 
@@ -76,15 +84,13 @@ for csv_path in selected_files:
 
     # Plot
     plt.plot(Pin, CL_f0, marker=".", label=f"{DUT} - {date} - Fundamental")
-
     plt.plot(Pin, CL_f02, marker=".", label=f"{DUT} - {date} - 2nd Harmonic")
 
 DUT_names = DUT_names.rstrip(", ")
 
-plt.xlabel("Input Power (dBm)")
-plt.ylabel("Conversion Loss (dB)")
 plt.title(f"{DUT_names}: Conversion Loss Comparison")
-
+plt.ylabel("Conversion Loss (dB)")
+plt.xlabel("Input Power (dBm)")
 plt.grid(True)
 plt.legend()
 plt.show()

@@ -1,6 +1,15 @@
-import pandas as pd
+# Author: Ian Cassidy
+
+'''
+Plots conversion loss vs input power as a 2D plot
+
+Intended for analyzing the diodes harmonic efficieny at a target frequency
+
+'''
+
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
 
 # CSV file
 csv_path = Path(r"Data\pin_sweep\SMS_1p5mm_2stub_20p6mm_TL_v1\2026-10-13_17-30-22.csv")

@@ -1,16 +1,16 @@
 # Ian Cassidy
-# Test Connection to Signal Generator
+# Test Connection to Signal Analyzer
 # OCT 1st 2026
 
-import time
 import pyvisa as visa
+import time
 import sys
 
 # Programmatically query the Python version and print information
 print('\nSystem version fn(sys.ver)):\n\t{}'.format(sys.version))
 
 # Obtain the VISA address (or alias) from Keysight Connection Expert
-VISA_ADDRESS = 'USB0::0x0957::0x1F01::MY59100943::0::INSTR'
+VISA_ADDRESS = 'USB0::0x2A8D::0x0B0B::MY53400410::0::INSTR'
 
 # Define VISA Resource Manager
 rm = visa.ResourceManager('C:\\Windows\\System32\\visa32.dll')
@@ -33,23 +33,12 @@ inst.clear()
 IDN = str(inst.query('*IDN?'))
 print('Connected to: {}'.format(IDN))
 
+inst.write(':CALCulate:MARKer1:MAXimum')        # Query the frequency of Marker 1 at the peak of the signal
+peak_freq = inst.query(':CALCulate:MARKer1:X?') # Find the position of Marker 1 on the frequency axis
+peak_amp = inst.query(':CALCulate:MARKer1:Y?')  # Read the amplitude at that peak
 
-# Set startup parameters for the signal generator
-inst.write(':SOURce:POWer 0DBM')
-inst.write(':SOURce:FREQuency 1GHz')
-
-# Turn on the output of the signal generator
-inst.write(':OUTPut:STATe ON')
-
-for i in range(1, 6):
-    inst.write(f':SOURce:FREQuency {i}GHz')             # Set the frequency of the signal generator to i GHz
-    current_freq = inst.query(':SOURce:FREQuency?')     # Verify the current frequency setting
-
-    print(f'Current Frequency: {current_freq}')
-    time.sleep(1.0)
-
-# Turn off the output of the signal generator
-inst.write(':OUTPut:STATe OFF')
+print(f"Peak Frequency: {float(peak_freq):,} Hz")
+print(f"Peak Amplitude: {float(peak_amp)} dBm")
 
 # Close instrument connection
 inst.close()

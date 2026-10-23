@@ -1,6 +1,15 @@
-import pandas as pd
+# Author: Ian Cassidy
+
+'''
+Plots ouptut power vs input power for a multiple tests
+
+Intended for comparing the power efficiency of diffent duts or tests
+
+'''
+
 import matplotlib.pyplot as plt
 from pathlib import Path
+import pandas as pd
 
 data_folder = Path("Data")
 
@@ -41,7 +50,6 @@ while DUTS == "y":
         print(f"{i}: {file.stem}")
 
     # Add tests for this DUT
-
     ADD_CSV = "y"
     while ADD_CSV == "y":
 
@@ -51,7 +59,6 @@ while DUTS == "y":
 
     # Add another DUT
     DUTS = input("\nWould you like to add another DUT to compare? (y/n) ")
-
 
 # Plotting
 plt.figure()
@@ -72,15 +79,13 @@ for csv_path in selected_files:
 
     # Plot
     plt.plot(Pin, f0, marker=".", label=f"{DUT} - {date} - Fundamental")
-
     plt.plot(Pin, f02, marker=".", label=f"{DUT} - {date} - 2nd Harmonic")
 
 DUT_names = DUT_names.rstrip(", ")
 
-plt.xlabel("Input Power (dBm)")
-plt.ylabel("Output Power (dBm)")
 plt.title(f"{DUT_names}: Input vs Output Power Comparison")
-
+plt.ylabel("Output Power (dBm)")
+plt.xlabel("Input Power (dBm)")
 plt.grid(True)
 plt.legend()
 plt.show()

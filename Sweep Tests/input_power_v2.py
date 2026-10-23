@@ -13,12 +13,13 @@ UVM, Votey Hall, Room 334B
 
 # Libraries
 from datetime import date
-import time
 from pathlib import Path
 import pyvisa as visa
-import sys
-import numpy as np
 import pandas as pd
+import numpy as np
+import time
+import sys
+
 
 #DUT = "SMS7621"  # Device Under Test (DUT) name
 #DUT = "SMS_1p5mm_2stub_20p6mm_TL_v1"  # Device Under Test (DUT) name
@@ -29,8 +30,8 @@ Pin = np.linspace(-60, 20, 201) # Input power sweep from X dBm to Y dBm in Z ste
 f0 = 1.578                      # Center frequency in GHz
 modes = [1, 2]                  # Harmonics to analyze (1 = fundamental, 2 = 2nd harmonic, etc.)
 
-SPAN = 5e4                          # Frequency span in Hz
-RBW = 1e2                        # Resolution bandwidth in Hz
+SPAN = 5e4                      # Frequency span in Hz
+RBW = 1e2                       # Resolution bandwidth in Hz
 
 # Obtain the VISA address (or alias) from Keysight Connection Expert
 VISA_ADDRESS_SG = 'USB0::0x0957::0x1F01::MY59100943::0::INSTR'
@@ -45,7 +46,6 @@ csv_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Create dataframe with one row for every Pin value
 df = pd.DataFrame({"Pin": Pin})
-
 
 # Define VISA Resource Manager
 rm = visa.ResourceManager('C:\\Windows\\System32\\visa32.dll')
@@ -95,7 +95,6 @@ inst_SA.write("*WAI")
 sweep_time = float(inst_SA. query(":SWE:TIME?"))
 
 print(f"Analyzer sweep time: {sweep_time:.3f} seconds")
-delay = sweep_time * 1.5  # Delay to allow for signal stabilization before measurement
 proceed = input(f'The sweep will take {sweep_time * 1.1 * len(Pin)* len(modes)} seconds.\nDo you want to proceed? (y/n): ')
 if proceed.lower() != 'y':
     print("Aborting sweep.")
@@ -132,16 +131,10 @@ for M in modes:
         inst_SA.write(":INIT:IMM")
         inst_SA.query("*OPC?")
 
-        # Find peak
-        inst_SA.write(':CALCulate:MARKer1:MAXimum')
+        inst_SA.write(':CALCulate:MARKer1:MAXimum')   
 
-        peak_freq = inst_SA.query(
-            ':CALCulate:MARKer1:X?'
-        )
-
-        peak_amp = inst_SA.query(
-            ':CALCulate:MARKer1:Y?'
-        )
+        peak_freq = inst_SA.query(':CALCulate:MARKer1:X?')
+        peak_amp = inst_SA.query(':CALCulate:MARKer1:Y?')
 
         # Store result
         df.loc[i, f"{harmonic_freq:g}GHz"] = float(peak_amp)
